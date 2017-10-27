@@ -1,0 +1,19 @@
+body {
+  background: url('../../images/test-foto.png') no-repeat center;
+  background-size: cover;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: Oswald, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  color: white;
+  font-weight: bold;
+}
+
+p {
+  font-weight: 300;
+  color: white;
+  text-align: center;
+}

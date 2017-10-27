@@ -1,0 +1,16 @@
+doctype html
+- var title = 'Project title'
+
+block vars
+
+html.no-js(lang="")
+    head
+        meta(charset="utf-8")
+        meta(name="description", content="")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no")
+        title #{title}
+    body
+        include ../common/header
+        block content
+        include ../common/footer
+        block scripts
