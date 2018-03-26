@@ -1,10 +1,12 @@
-
 class App {
   constructor() {
-    console.log('APP')
+    this.example = 'This is example app!';
   }
-  log() {
-    console.log('log 1222')
+  static log(log) {
+    console.log(log);
+  }
+  getExample() {
+    return this.example;
   }
 }
 

@@ -1,44 +1,44 @@
-let path = require('path');
-let webpack = require('webpack');
-let ReloadPlugin = require('reload-html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const ReloadPlugin = require('reload-html-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
 
 const extractSass = new ExtractTextPlugin({
-  filename: "[name].css",
+  filename: '[name].css',
+  // disable: process.env.NODE_ENV === "development"
 });
 
-const page = (name) => new HtmlWebpackPlugin({
+const page = name => new HtmlWebpackPlugin({
   template: `src/views/pages/${name}/${name}.pug`,
   inject: 'body',
   title: 'App',
-  filename: `${name}.html`
+  filename: `${name}.html`,
 });
 
 
-let config = {
-  build: './public/',
+const config = {
+  build: './public',
   src: {
     views: '/src/views/',
     styles: '/src/styles/',
     js: '/src/js/',
-  }
+  },
 };
 
 module.exports = {
-  entry: __dirname + config.src.js + 'main.js',
+  entry: `${path.join(__dirname, config.src.js)}main.js`,
   output: {
     path: path.resolve(__dirname, config.build),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   module: {
     loaders: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['es2015']
-        },
+        use: ['babel-loader', 'eslint-loader'],
         exclude: /node_modules/,
       },
       {
@@ -46,27 +46,31 @@ module.exports = {
         use: extractSass.extract({
           use: [
             {
-              loader: "css-loader"
+              loader: 'css-loader',
+              options: {
+                minimize: true,
+                sourceMap: true,
+              },
             },
             {
-              loader: "resolve-url-loader"
+              loader: 'resolve-url-loader',
             },
             {
-              loader: `sass-loader?sourceMap=${config.src.styles}main.scss`
+              loader: `sass-loader?sourceMap=${config.src.styles}main.scss`,
             },
             {
               loader: 'postcss-loader',
               options: {
                 ident: 'postcss',
-                plugins: (loader) => [
-                  require('autoprefixer')(),
-                  require('cssnano')()
-                ]
-              }
+                plugins: () => [
+                  autoprefixer(),
+                  cssnano(),
+                ],
+              },
             },
           ],
-          fallback: "style-loader"
-        })
+          fallback: 'style-loader',
+        }),
       },
       {
         test: /\.(jpe?g|png|woff|gif|woff2|eot|ttf|svg|otf)(\?[a-z0-9=.]+)?$/,
@@ -75,10 +79,10 @@ module.exports = {
             loader: 'file-loader',
             options: {
               name: 'assets/[path][name].[ext]',
-              context: 'src'
-            }
-          }
-        ]
+              context: 'src',
+            },
+          },
+        ],
       },
       {
         test: /\.(pug|jade)$/,
@@ -88,40 +92,41 @@ module.exports = {
             query: {
               minimize: false,
               collapseWhitespace: false,
-              conservativeCollapse: false
-            }
+              conservativeCollapse: false,
+            },
           },
           {
             loader: 'pug-html-loader?minimize=false',
             query: {
               minimize: false,
               collapseWhitespace: false,
-              conservativeCollapse: false
-            }
-          }
-        ]
+              conservativeCollapse: false,
+            },
+          },
+        ],
       },
-    ]
+    ],
   },
   devServer: {
     historyApiFallback: true,
     contentBase: [config.build],
     hot: true,
     watchContentBase: true,
-    inline: true
+    inline: true,
+    stats: 'errors-only',
   },
   plugins: [
     extractSass,
     page('index'),
-  ]
+  ],
 };
 
 if (process.env.NODE_ENV === 'development') {
   module.exports.devtool = '#source-map';
   module.exports.plugins = (module.exports.plugins || []).concat([
     new webpack.HotModuleReplacementPlugin(),
-    new ReloadPlugin()
-  ])
+    new ReloadPlugin(),
+  ]);
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -129,8 +134,9 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
       compress: {
-        warnings: false
-      }
-    })
-  ])
+        warnings: false,
+      },
+    }),
+  ]);
 }
+
