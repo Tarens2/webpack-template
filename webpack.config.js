@@ -8,7 +8,6 @@ const cssnano = require('cssnano');
 
 const extractSass = new ExtractTextPlugin({
   filename: '[name].css',
-  // disable: process.env.NODE_ENV === "development"
 });
 
 const page = name => new HtmlWebpackPlugin({
